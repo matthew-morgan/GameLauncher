@@ -180,6 +180,7 @@ public class Launcher extends JFrame {
             String username = JOptionPane.showInputDialog(null, "Enter your desired username:");
             String password = JOptionPane.showInputDialog(null, "Enter your desired password:");
             System.out.println("User: " + username + " password: " + password);
+            //todo : Create a new Player and add it to the state
         }
     }
 
