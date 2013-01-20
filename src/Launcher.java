@@ -16,12 +16,10 @@ public class Launcher extends JFrame {
     protected JMenu gameMenu;
     protected JMenuItem addGameButton;
     protected JMenuItem addNewUserButton;
-    final protected JFileChooser fc;
+    final protected JFileChooser fileChooser;
     protected LauncherState state = null;
-    protected File file;
     protected JOptionPane inputDialogBox;
-    protected String className = null;
-    private FileOpener fo;
+    protected FileOpener fo;
     protected String stateFileName = "launcher.State";
 
 
@@ -48,7 +46,8 @@ public class Launcher extends JFrame {
             in.close();
             fileIn.close();
             for(URLAndClassName game : state.getStoredGames()){
-                addGameToMenu(game.getURL(), game.getClassName());
+                File f = new File(game.getURL().toURI());
+                addGameToMenu(f, game.getClassName());
             }
             return state;
         }
@@ -63,13 +62,16 @@ public class Launcher extends JFrame {
         }
         return new LauncherState();
     }
-    protected void addGameToMenu(URL url, String className){
-        JMenuItem jmi = fo.open(file, className);
+    protected void addGameToMenu(File file, String className){
+        JMenuItem jmi = fo.open(file, className, false);
         if(jmi != null){
             gameMenu.add(jmi);
             jmi.addActionListener(new addedGameMenuListener(file, className));
             if(state != null) {
-                state.addGame(url, className);
+                try {state.addGame(file.toURI().toURL(), className); }
+                catch (java.net.MalformedURLException exception){
+                    System.out.println("Malformed URL");
+                }
             }
         }
     }
@@ -90,8 +92,8 @@ public class Launcher extends JFrame {
         state = DeserializeState();
 
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Java archive", "jar");
-        fc = new JFileChooser();
-        fc.setFileFilter(filter);
+        fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(filter);
 
         addGameButton.addActionListener(new newGameMenuListener());
         addNewUserButton.addActionListener(new newUserMenuListener());
@@ -114,15 +116,14 @@ public class Launcher extends JFrame {
 
     public class FileOpener{
 
-        public JMenuItem open(File file, String className){
+        public JMenuItem open(File file, String className, Boolean execute){
             try {
                 URL u = file.toURI().toURL();
                 URLClassLoader loader = new URLClassLoader(new URL[]{u});
                 Class clmj = Class.forName(className, true, loader);
                 Constructor constructor = clmj.getConstructor();
-                constructor.newInstance();
-                JMenuItem newGameItem = new JMenuItem(clmj.getName());
-                return newGameItem;
+                if(execute) constructor.newInstance();
+                return new JMenuItem(clmj.getName());
             }
             catch(java.lang.InstantiationException exception){
                 System.out.println(exception.getMessage());
@@ -154,16 +155,13 @@ public class Launcher extends JFrame {
 
         public void actionPerformed(ActionEvent e){
 
-            if (fc.showOpenDialog(Launcher.this) == JFileChooser.APPROVE_OPTION) {
-                file = fc.getSelectedFile();
-                className = JOptionPane.showInputDialog(null, "Enter the name of the class you require:");
-                try {addGameToMenu(file.toURI().toURL(), className); }
-                catch (java.net.MalformedURLException exception){
-                    System.out.println("Malformed URL");
-                }
+            if (fileChooser.showOpenDialog(Launcher.this) == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                String className = JOptionPane.showInputDialog(null, "Enter the name of the class you require:");
+                addGameToMenu(file, className); }
+
             }
         }
-    }
 
     private class addedGameMenuListener implements ActionListener {
         protected File file;
@@ -173,7 +171,7 @@ public class Launcher extends JFrame {
             this.className = className;
         }
         public void actionPerformed(ActionEvent e){
-        fo.open(file, className);
+            fo.open(file, className, true);
         }
     }
 
@@ -184,7 +182,11 @@ public class Launcher extends JFrame {
             System.out.println("User: " + username + " password: " + password);
         }
     }
+
     public static void main(String[] args){
         new Launcher();
     }
 }
+
+
+
