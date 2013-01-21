@@ -6,9 +6,9 @@
  * To change this template use File | Settings | File Templates.
  */
 
-import java.io.*;
+import java.io.Serializable;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
 
 
 public class LauncherState implements Serializable {

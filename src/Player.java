@@ -5,7 +5,7 @@
  * Time: 14:51
  * To change this template use File | Settings | File Templates.
  */
-import java.util.*;
+
 import java.io.Serializable;
 
 public class Player implements Serializable{

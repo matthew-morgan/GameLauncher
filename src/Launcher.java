@@ -1,29 +1,29 @@
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.*;
-import java.io.IOException;
-import javax.swing.JOptionPane;
+import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.lang.Class;
-import java.lang.reflect.*;
 
 public class Launcher extends JFrame {
+    //todo: eliminate wildcard imports
+    //todo: when you only set something in constructor and never change it afterwards, tell that to the world by making it final
 
-    protected JMenuBar menuBar;
-    protected JMenu gameMenu;
-    protected JMenuItem addGameButton;
-    protected JMenuItem addNewUserButton;
-    final protected JFileChooser fileChooser;
-    protected LauncherState state = null;
-    protected JOptionPane inputDialogBox;
-    protected FileOpener fo;
-    protected String stateFileName = "launcher.State";
+    private final JMenuBar menuBar;
+    private final JMenu gameMenu;
+    private final JMenuItem addGameButton;
+    private final JMenuItem addNewUserButton;
+    private final JFileChooser fileChooser;
+    private final FileOpener fileOpener;
+    private final String stateFileName = "launcher.State";
+    private LauncherState state = null;
 
-
-    protected void SerializeState(){
+    private void SerializeState(LauncherState state){
         try
         {
             FileOutputStream fileOut = new FileOutputStream(stateFileName);
@@ -37,7 +37,7 @@ public class Launcher extends JFrame {
             e.printStackTrace();
         }
     }
-    protected LauncherState DeserializeState(){
+    private LauncherState DeserializeState(){
         try
         {
             FileInputStream fileIn = new FileInputStream(stateFileName);
@@ -57,28 +57,23 @@ public class Launcher extends JFrame {
         }
         catch(Exception e)
         {
-            //e.printStackTrace();
+            e.printStackTrace();
             //System.out.println("" + e);  //Todo: get rid of these print calls
         }
         return new LauncherState();
     }
-    protected void addGameToMenu(File file, String className){
-        JMenuItem jmi = fo.open(file, className, false);
+    private void addGameToMenu(File file, String className){
+        JMenuItem jmi = fileOpener.open(file, className, false);
         if(jmi != null){
             gameMenu.add(jmi);
             jmi.addActionListener(new addedGameMenuListener(file, className));
-            if(state != null) {
-                try {state.addGame(file.toURI().toURL(), className); }
-                catch (java.net.MalformedURLException exception){
-                    System.out.println("Malformed URL");
-                }
-            }
+
         }
     }
 
     public Launcher(){
         super ("Game Launcher");
-        fo = new FileOpener();
+        fileOpener = new FileOpener();
         menuBar = new JMenuBar();
         gameMenu = new JMenu("Start");
         addGameButton = new JMenuItem("Add game");
@@ -87,7 +82,6 @@ public class Launcher extends JFrame {
         gameMenu.add(addNewUserButton); //Todo: make separate menus here
         menuBar.add(gameMenu);
         setJMenuBar(menuBar);
-        inputDialogBox = new JOptionPane();
 
         state = DeserializeState();
 
@@ -101,11 +95,10 @@ public class Launcher extends JFrame {
         this.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentHidden(ComponentEvent e) {
-                SerializeState();
+                SerializeState(state);
                 ((JFrame)(e.getComponent())).dispose();
             }
         });
-
 
         setPreferredSize(new Dimension(800, 600));
         setDefaultCloseOperation (JFrame.HIDE_ON_CLOSE);
@@ -158,7 +151,14 @@ public class Launcher extends JFrame {
             if (fileChooser.showOpenDialog(Launcher.this) == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
                 String className = JOptionPane.showInputDialog(null, "Enter the name of the class you require:");
-                addGameToMenu(file, className); }
+                addGameToMenu(file, className);
+                if(state != null) {
+                    try {state.addGame(file.toURI().toURL(), className); }
+                    catch (java.net.MalformedURLException exception){
+                        System.out.println("Malformed URL");
+                    }
+                }
+            }
 
             }
         }
@@ -171,7 +171,7 @@ public class Launcher extends JFrame {
             this.className = className;
         }
         public void actionPerformed(ActionEvent e){
-            fo.open(file, className, true);
+            fileOpener.open(file, className, true);
         }
     }
 

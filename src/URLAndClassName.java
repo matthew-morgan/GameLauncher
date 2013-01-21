@@ -6,8 +6,8 @@
  * To change this template use File | Settings | File Templates.
  */
 
+import java.io.Serializable;
 import java.net.URL;
-import java.io.*;
 
 public class URLAndClassName implements Serializable {
     protected URL url;
