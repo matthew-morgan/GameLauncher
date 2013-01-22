@@ -9,15 +9,15 @@
 import java.io.Serializable;
 import java.net.URL;
 
-public class URLAndClassName implements Serializable {
-    protected URL url;
-    protected String className;
+class URLAndClassName implements Serializable {
+    private final URL url;
+    private final String className;
 
     public URLAndClassName(URL url, String className){
         this.url = url;
         this.className = className;
     }
 
-    public URL getURL(){return this.url;}
-    public String getClassName(){return this.className;}
+    protected URL getURL(){return this.url;}
+    protected String getClassName(){return this.className;}
 }

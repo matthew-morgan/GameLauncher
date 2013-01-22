@@ -107,7 +107,7 @@ public class Launcher extends JFrame {
         setVisible (true);
     }
 
-    public class FileOpener{
+    private class FileOpener{
 
         public JMenuItem open(File file, String className, Boolean execute){
             try {
