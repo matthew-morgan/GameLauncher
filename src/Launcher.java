@@ -11,8 +11,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 public class Launcher extends JFrame {
-    //todo: eliminate wildcard imports
-    //todo: when you only set something in constructor and never change it afterwards, tell that to the world by making it final
 
     private final JMenuBar menuBar;
     private final JMenu gameMenu;
