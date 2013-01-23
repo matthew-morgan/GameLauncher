@@ -28,5 +28,9 @@ class LauncherState implements Serializable {
     protected ArrayList<Player> getPlayerList(){return this.playerList;}
     protected Player getCurrentPlayer(){return this.currentPlayer;}
     protected ArrayList<URLAndClassName> getStoredGames(){return this.storedGames;}
+    protected Boolean playerExists(Player player){
+        for (Player p : playerList){if(player.getUsername().equals(p.getUsername())) return true;}
+        return false;
+    }
 
 }

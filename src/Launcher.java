@@ -18,7 +18,7 @@ public class Launcher extends JFrame {
     private final JMenuItem addNewUserButton;
     private final JFileChooser fileChooser;
     private final FileOpener fileOpener;
-    private final String stateFileName = "launcher.State";
+    private final String stateFileName = "launcher";
     private LauncherState state = null;
 
     private void SerializeState(LauncherState state){
@@ -175,10 +175,19 @@ public class Launcher extends JFrame {
 
     private class newUserMenuListener implements ActionListener{
         public void actionPerformed(ActionEvent e){
-            String username = JOptionPane.showInputDialog(null, "Enter your desired username:");
-            String password = JOptionPane.showInputDialog(null, "Enter your desired password:");
-            System.out.println("User: " + username + " password: " + password);
-            //todo : Create a new Player and add it to the state
+            String password;
+            String username;
+            username = JOptionPane.showInputDialog(null, "Enter your desired username (blank entry aborts):");
+            if (!username.equals("")){
+                password = JOptionPane.showInputDialog(null, "Enter your desired password:");
+                Player player = new Player(username, password);
+                if(!state.playerExists(player)){
+                    state.addPlayer(player);
+                    JOptionPane.showMessageDialog(Launcher.this, "User added.");
+                }
+                else JOptionPane.showMessageDialog(Launcher.this, "User with this name already exists.");
+            }
+
         }
     }
 

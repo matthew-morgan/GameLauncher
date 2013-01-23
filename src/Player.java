@@ -13,7 +13,9 @@ class Player implements Serializable{
     protected String password;
     protected int highscore;
 
-    private String getUsername() {return username;}
+    public Player(String username, String password){this.username = username; this.password = password;}
+
+    protected String getUsername() {return username;}
     private void setUsername(String username) {this.username = username;}
     private void setPassword(String password) {this.password = password;}
     private String getPassword() {return password;}
