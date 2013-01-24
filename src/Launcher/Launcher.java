@@ -1,3 +1,4 @@
+package launcher;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
@@ -16,6 +17,7 @@ public class Launcher extends JFrame {
     private final JMenu gameMenu;
     private final JMenuItem addGameButton;
     private final JMenuItem addNewUserButton;
+    private final JMenuItem loginButton;
     private final JFileChooser fileChooser;
     private final FileOpener fileOpener;
     private final String stateFileName = "launcher";
@@ -70,12 +72,14 @@ public class Launcher extends JFrame {
     }
 
     public Launcher(){
-        super ("Game Launcher");
+        super ("Game launcher");
         fileOpener = new FileOpener();
         menuBar = new JMenuBar();
         gameMenu = new JMenu("Start");
         addGameButton = new JMenuItem("Add game");
         addNewUserButton = new JMenuItem("Add new user");
+        loginButton = new JMenuItem("Login");
+        gameMenu.add(loginButton);
         gameMenu.add(addGameButton);
         gameMenu.add(addNewUserButton); //Todo: make separate menus here
         menuBar.add(gameMenu);
@@ -89,6 +93,7 @@ public class Launcher extends JFrame {
 
         addGameButton.addActionListener(new newGameMenuListener());
         addNewUserButton.addActionListener(new newUserMenuListener());
+        loginButton.addActionListener(new loginUserListener());
 
         this.addComponentListener(new ComponentAdapter() {
             @Override
@@ -178,7 +183,7 @@ public class Launcher extends JFrame {
             String password;
             String username;
             username = JOptionPane.showInputDialog(null, "Enter your desired username (blank entry aborts):");
-            if (!username.equals("")){
+            if (username != null && !username.equals("")){
                 password = JOptionPane.showInputDialog(null, "Enter your desired password:");
                 Player player = new Player(username, password);
                 if(!state.playerExists(player)){
@@ -188,6 +193,23 @@ public class Launcher extends JFrame {
                 else JOptionPane.showMessageDialog(Launcher.this, "User with this name already exists.");
             }
 
+        }
+    }
+
+    private class loginUserListener implements ActionListener{
+        public void actionPerformed(ActionEvent e){
+                String password;
+                String username;
+                username = JOptionPane.showInputDialog(null, "Enter your username (blank entry aborts):");
+                if (!username.equals("")){
+                    password = JOptionPane.showInputDialog(null, "Enter your password:");
+                    Player player = new Player(username, password);
+                    if(state.playerExists(player)){
+                        state.currentPlayer = player;
+                        setTitle("Welcome, " + player.getUsername());
+                    }
+                    else JOptionPane.showMessageDialog(Launcher.this, "Authentication error.");
+                }
         }
     }
 

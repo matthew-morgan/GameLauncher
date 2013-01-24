@@ -1,10 +1,4 @@
-/**
- * Created with IntelliJ IDEA.
- * User: Matthew
- * Date: 13/01/13
- * Time: 21:03
- * To change this template use File | Settings | File Templates.
- */
+package launcher;
 
 import java.io.Serializable;
 import java.net.URL;

@@ -1,10 +1,4 @@
-/**
- * Created with IntelliJ IDEA.
- * User: Matthew
- * Date: 20/12/12
- * Time: 15:10
- * To change this template use File | Settings | File Templates.
- */
+package launcher;
 
 import java.io.Serializable;
 import java.net.URL;
@@ -30,6 +24,12 @@ class LauncherState implements Serializable {
     protected ArrayList<URLAndClassName> getStoredGames(){return this.storedGames;}
     protected Boolean playerExists(Player player){
         for (Player p : playerList){if(player.getUsername().equals(p.getUsername())) return true;}
+        return false;
+    }
+
+    protected Boolean validPassword(Player player){
+        for (Player p : playerList){
+            if(player.getUsername().equals(p.getUsername()) && player.passwordMatches(p)) return true;}
         return false;
     }
 
